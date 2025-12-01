@@ -10,7 +10,7 @@ export const getemployee = async (req, res) => {
   }
 };
 
-// lấy nhân viên theo tên
+// lấy nhân viên theo tên 
 export const getemployeeByName = async (req, res) => {
   try {
     const TenNV = req.params.TenNV;
