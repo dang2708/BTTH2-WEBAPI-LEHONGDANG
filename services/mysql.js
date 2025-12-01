@@ -11,5 +11,4 @@ const connectionOptions = process.env.MYSQL_URI ?? {
 
 export const pool = mysql
   .createPool(connectionOptions);
-
 console.log("MySQL pool initialized");
