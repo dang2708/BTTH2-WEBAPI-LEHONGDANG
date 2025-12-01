@@ -6,7 +6,7 @@ const connectionOptions = process.env.MYSQL_URI ?? {
   port: process.env.MYSQL_PORT || 3306,
   user: process.env.MYSQL_USERNAME || "root",
   password: process.env.MYSQL_PASSWORD || "Dang2708@",
-  database: process.env.MYSQL_DBNAME || "NodeAPI"
+  database: process.env.MYSQL_DBNAME || "bt2"
 };
 
 export const pool = mysql
