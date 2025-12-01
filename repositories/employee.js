@@ -1,45 +1,77 @@
-import { deleteemployee, postemployee, updateemployee } from "../controllers/employeeController.js";
-import { pool } from "../services/mysql.js";
+import e from "express";
+import { employeeRepo } from "../repositories/employee.js";
 
-export const userRepo = {
-    getUsers: async () => {
-        const db = await pool;
-        const [rows] = await db.query("SELECT * FROM NHANVIEN");
-        return rows;
-    },
-
-    postemployee: async (maNV, TenNV, GioiTinh, NgaySinh, email, SDT) => {
-        const sql = "INSERT INTO NHANVIEN (maNV, TenNV, GioiTinh, NgaySinh, email, SDT) VALUES (?, ?, ?, ?, ?, ?)";
-        const db = await pool;
-        const [rows] = await db.query(sql, [maNV, TenNV, GioiTinh, NgaySinh, email, SDT]);
-        return rows;
-    },
-
-    deleteemployee: async (maNV) => {
-        const sql = "DELETE FROM NHANVIEN WHERE maNV = ?";
-        const db = await pool;
-        const [rows] = await db.query(sql, [maNV]);
-        return rows;
-    },
-
-    updateemployee: async (maNV, TenNV, GioiTinh, NgaySinh, email, SDT) => {
-        const sql = "UPDATE NHANVIEN SET TenNV = ?, GioiTinh = ?, NgaySinh = ?, email = ?, SDT = ? WHERE maNV = ?";
-        const db = await pool;
-        const [rows] = await db.query(sql, [TenNV, GioiTinh, NgaySinh, email, SDT, maNV]);
-        return rows;
-    },
-
-    getemployeeById: async (maNV) => {
-        const sql = "SELECT * FROM NHANVIEN WHERE maNV = ?";
-        const db = await pool;
-        const [rows] = await db.query(sql, [maNV]);
-        return rows[0];
-    },
-
-    getemployeeByName: async (TenNV) => {
-        const sql = "SELECT * FROM NHANVIEN WHERE TenNV = ?";
-        const db = await pool;
-        const [rows] = await db.query(sql, [TenNV]);
-        return rows[0];
-    },
+export const getemployee = async (req, res) => {
+  try {
+    const employee = await employeeRepo.getemployee();
+    res.json(employee);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
+
+// lấy nhân viên theo tên
+export const getemployeeByName = async (req, res) => {
+  try {
+    const TenNV = req.params.TenNV;
+    const employee = await employeeRepo.getemployeeByName(TenNV);
+    if (employee) {
+      res.json(employee);
+    } else {
+      res.status(404).json({ message: "Nhân viên không tồn tại" });
+    }} catch (err) {
+    res.status(500).json({ message: err.message });
+  }};
+
+  // lấy nhân viên theo mã
+export const getemployeeById = async (req, res) => {
+  try { 
+    const maNV = req.params.maNV;
+    const employee = await employeeRepo.getemployeeById(maNV);
+    if (employee) {
+      res.json(employee);
+    } else {
+      res.status(404).json({ message: "Nhân viên không tồn tại" });
+    }} catch (err) {
+    res.status(500).json({ message: err.message });
+  }};
+
+// thêm nhân viên
+export const postemployee = async (req, res) => {
+  try {
+   
+    const { maNV, TenNV, GioiTinh, NgaySinh, email, SDT } = req.body;
+
+   
+    if (!maNV) {
+        return res.status(400).json({ message: "Vui lòng nhập maNV!" });
+    }
+
+    const employee = await employeeRepo.postemployee(maNV, TenNV, GioiTinh, NgaySinh, email, SDT);
+    
+    res.status(201).json({ message: "Thêm thành công", data: employee });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// xoá nhân viên  
+export const deleteemployee = async (req, res) => {
+  try {
+    const { maNV } = req.params;
+    await employeeRepo.deleteemployee(maNV);
+    res.json({ message: "Xoá thành công" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }};
+
+// cập nhật nhân viên
+export const updateemployee = async (req, res) => {
+  try {
+    const { maNV } = req.params;
+    const { TenNV, GioiTinh, NgaySinh, email, SDT } = req.body;
+    await employeeRepo.updateemployee(maNV, TenNV, GioiTinh, NgaySinh, email, SDT);
+    res.json({ message: "Cập nhật thành công" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }};
